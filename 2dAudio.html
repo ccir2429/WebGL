@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>2D Audio Visualiser</title>
+</head>
+<body>
+    <div id="overlay">
+        <div>
+            <button id="startButton">Click to Play</button>
+            <p>Audio playback requires user interaction.</p>
+        </div>
+    </div>
+    <div id="container"></div>
+    <script src="js/three.js" ></script>
+    <script>
+        var audioURL="sounds/358232_j_s_song.mp3";
+
+        var camera,scene,renderer, analyser;
+
+        var startButton = document.getElementById( 'startButton' );
+        startButton.addEventListener( 'click', init );
+
+
+        function init(){
+            var overlay = document.getElementById('overlay');
+            overlay.remove();
+
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth,window.innerHeight);
+            renderer.setClearColor(0x000000);
+            renderer.setPixelRato(window.devicePixelRatio);
+            
+            var container = document.getElementById('container');
+            container.appendChild(renderer.domElement)
+            
+            scene = new THREE.scene();
+            camera = new THREE.Camera();
+
+            var listener = new THREE.AudioListener();
+
+            var audio = new THREE.Audio(listener);
+
+            var mediaElement = new Audio(audioURL);
+            mediaElement.loop = true;
+            mediaElement.play();
+
+            audio.setMediaElementSource(mediaElement);
+
+            
+            animate();
+        }
+
+        function animate(){
+            requestAnimationFrame(animate);
+
+            renderer.render(scene,camera);
+
+        }
+    </script>
+</body>
+</html>

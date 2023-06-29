@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+			
+		</style>
+	</head>
+	<body>
+	
+		<script src="js/three.js"></script>
+		<script>
+			var DIMENSION = 50
+			var camera, scene, controls, renderer,geometry,material,surface,plane;
+			var colors = ["red","orange","yellow","green","blue","purple","violet","white","red","orange","yellow","green","blue","purple"];
+			var objects= new Array();
+			init();
+			animate();
+			function init(){
+				renderer = new THREE.WebGLRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+				
+				scene = new THREE.Scene();
+				camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.1, 1000 );
+							
+				camera.position.set( 0,15,DIMENSION+10 );
+				camera.rotation.x =-0.5;
+				
+				for(var i=0;i<DIMENSION*DIMENSION;i++)
+				{
+					colors.push("red");
+					colors.push("red");
+					colors.push("red");
+					colors.push("yellow");
+					colors.push("yellow");
+					colors.push("yellow");
+					colors.push("blue");
+					colors.push("blue");
+					colors.push("blue");
+					colors.push("blue");
+					colors.push("red");
+				}
+				
+				 
+
+				
+				 geometry = new THREE.PlaneGeometry( 1, 1 );
+				/*
+				|| xOy plane
+				*/
+				for(var i=-DIMENSION;i<DIMENSION;i++){
+					for(var j=-DIMENSION;j<DIMENSION;j++)
+					{
+						material = new THREE.MeshBasicMaterial({color:"white",wireframe:true,wireframeLinewidth:0.5});
+						material.opacity=0.25;
+						material.transparent=true;
+						surface = new THREE.Mesh(geometry,material);
+						surface.position.x=j;
+						surface.position.y=-DIMENSION/4;
+						surface.position.z=i;
+						surface.rotation.x=5;
+						
+						scene.add(surface);	
+					}
+				}
+				for(var i =-DIMENSION;i<DIMENSION;i++){
+				
+					for(var j=-DIMENSION;j<DIMENSION;j++){
+						var f=Math.cos(i*50)*Math.sin(j*50);//f(x,y)
+						
+						material = new THREE.MeshBasicMaterial({color: colors[Math.sqrt(i*i*j*j)],wireframe:false,wireframeLinewidth:0.5});
+
+						surface = new THREE.Mesh(geometry,material);
+						surface.position.x=j;
+						surface.position.y=f;
+						surface.position.z=i;
+						surface.rotation.x=5;
+						
+						objects.push(surface);
+						scene.add(surface);			
+					}
+				}
+				
+				//renderer.setPixelRatio(0.7);
+			}
+			var x=false;
+			
+			function animate() {
+				requestAnimationFrame( animate );
+				
+				for(var b in objects){
+					//objects[b].rotation.x +=0.05;
+					//console.log();
+				}
+				//console.log(objects[0].rotation.x);
+				//camera.position.z +=0.5;
+				//camera.position.z +=0.05;
+				//var a = camera.position.y +=0.25;
+				
+				//camera.rotation.y -=0.05;
+				
+				//console.log(camera.position.z);
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>

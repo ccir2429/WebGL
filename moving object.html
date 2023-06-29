@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Localhost</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+			
+		</style>
+	</head>
+	<body>
+		<button id="toggleCamBtn">ToggleCamera2</button>
+		<button id="rotateCamDn">RESET Cam 1</button>
+		<button id="rotateCamUp">RESET Cam 2</button>
+		
+		<script src="js/three.js"></script>
+		<script>
+			var DIMENSION = 50;
+			var NOISE = 4;
+			
+			var toggledCam, camera, scene, cam2, controls, renderer,geometry,material,surface,plane,gridHelper,axesHelper,
+			groupObject,pivot;
+			var colors = ["#112d4e","#f9f7f7","#dbe2ef","#3f72af"];
+			var objects= new Array();
+			init();
+			
+			/* initial state*/
+			var c1 = [camera.rotation.x,camera.rotation.y,camera.position.x,camera.position.y,camera.position.z];
+			var c2 = [cam2.rotation.x,cam2.rotation.y,cam2.position.x,cam2.position.y,cam2.position.z];
+			/* Event Listeners */
+			window.addEventListener( 'resize', onResize, false );
+				
+				var wut = window.location;
+				console.log(wut);
+				
+			
+			document.addEventListener('keydown', KeyPressHandle);
+			
+			document.getElementById("rotateCamDn").addEventListener('click',function(){
+				camera.rotation.x = c1[0];
+				camera.rotation.y = c1[1];
+				camera.position.x = c1[2];
+				camera.position.y = c1[3];
+				camera.position.z = c1[4];
+			});
+			document.getElementById("rotateCamUp").addEventListener('click',function(){
+				cam2.rotation.x = c2[0];
+				cam2.rotation.y = c2[1];
+				cam2.position.x = c2[2];
+				cam2.position.y = c2[3];
+				cam2.position.z = c2[4];
+			});
+			
+			var toggleCamBtn = document.getElementById("toggleCamBtn");
+			toggleCamBtn.addEventListener('click',toggleCam);
+			
+			/* End of Event Listeners */
+			
+			
+			animate(); /* ANIMATE */
+			
+			function KeyPressHandle(e){
+			console.log(e.code);
+			
+			switch(e.code){
+			case 'KeyF'://down
+				toggledCam.rotation.x-=0.05
+			break;
+			case 'KeyR'://up
+				toggledCam.rotation.x+=0.05
+			break;
+			case 'KeyE'://right
+				toggledCam.rotation.y-=0.05
+			break;
+			case 'KeyQ'://left
+				toggledCam.rotation.y+=0.05
+			break;
+			case 'KeyD'://rightMove
+				toggledCam.position.x+=0.25
+			break;
+			case 'KeyA'://leftMove
+				toggledCam.position.x-=0.25
+			break;
+			case 'KeyS'://backward
+				toggledCam.position.z+=0.25
+			break;
+			case 'KeyW'://Forward
+				toggledCam.position.z-=0.25
+			break;
+			case 'KeyU'://upMove
+				toggledCam.position.y+=0.25
+			break;
+			case 'KeyJ'://DownMove
+				toggledCam.position.y-=0.25
+			break;
+			}
+			
+			
+			}
+			function onResize() {
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+			var toggled = true;
+			function toggleCam(){
+			
+				if (toggled){
+					toggled = false;
+					toggledCam = cam2;
+					renderer.render(scene, toggledCam);
+				}
+				else{
+					toggled=true;
+					toggledCam = camera;
+					renderer.render(scene, toggledCam);
+				}
+			}
+			
+			function init(){
+				renderer = new THREE.WebGLRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+				
+				scene = new THREE.Scene();
+				camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.1, 1000 );
+							
+				camera.position.set( 0,15,DIMENSION+10 );
+				camera.rotation.x =-0.5;
+				
+				toggledCam = camera;
+				cam2 = new THREE.PerspectiveCamera(50,window.innerWidth/window.innerHeight,0.1,200);
+				cam2.position.x=0;
+				cam2.position.y=10;
+				cam2.position.z=0;
+				
+				var helper = new THREE.CameraHelper( cam2 );
+				scene.add( helper );
+				
+				for(var i=0;i<DIMENSION*DIMENSION;i++)
+				{
+					colors.push("#3f72af");
+					colors.push("#3f72af");
+					colors.push("#3f72af");
+					colors.push("#dbe2ef");
+					colors.push("#dbe2ef");
+					colors.push("#dbe2ef");
+					colors.push("#f9f7f7");
+					colors.push("#f9f7f7");
+					colors.push("#f9f7f7");
+					colors.push("#112d4e");
+					colors.push("#112d4e");
+					colors.push("#112d4e");
+				}
+				
+				 
+
+				
+				 geometry = new THREE.PlaneGeometry( 1, 1 );
+				/*===============
+				|| xOy 
+				==================*/
+				
+				gridHelper = new THREE.GridHelper(DIMENSION*2,DIMENSION,"#FF0000");
+				gridHelper.position.x=0;
+				gridHelper.position.y=-10;
+				gridHelper.position.z=0;
+				
+				scene.add(gridHelper);
+				
+				axesHelper = new THREE.AxesHelper(DIMENSION/2);
+				axesHelper.position.x=0;
+				axesHelper.position.y=0;
+				axesHelper.position.z=0;
+				scene.add(axesHelper);
+				
+				pivot = new THREE.Group();
+				groupObject = new THREE.Object3D();
+				geometry = new THREE.BoxGeometry
+				for(var i =-DIMENSION;i<DIMENSION;i++){
+				
+					for(var j=-DIMENSION;j<DIMENSION;j++){
+						var f=Math.cos(i*50)*Math.sin(j*50);//(Math.sqrt(i*i+i*i))+(Math.cos(i*50)+Math.sin(j*50));// Math.cos(i*50)*Math.sin(j*50);//Math.sqrt(i*i+j*j);//f(x,y)  
+						
+						material = new THREE.MeshBasicMaterial({color: colors[Math.sqrt(i*i*j*j)],wireframe:false});
+						material.wireframeLinewidth=4.5;
+						
+						surface = new THREE.Mesh(geometry,material);
+						surface.position.x=j;
+						surface.position.y=f;
+						surface.position.z=i;
+						groupObject.add(surface);
+						objects.push(surface);		
+					}
+				}
+				scene.add(pivot);	
+				
+				pivot.add(groupObject);
+				groupObject.position.set(0,0,0);
+				
+				renderer.setPixelRatio(window.devicePixelRatio);
+				renderer.render( scene, toggledCam );
+				
+				//console.log(pivot);
+			}
+			/* // EXPERIMENTAL
+			var rotationDestY = -0.7, rotationDestX = -0.7,RotX=0,RotY=0;
+			var easeVal = 5;
+			function customMove(){
+				RotX += ( cubeRotXDest - cubeRotX ) / easeVal;
+				RotY += ( cubeRotYDest - cubeRotY ) / easeVal;
+				
+				pivot.rotation.x+= rotationDestX
+				pivot.rotation.y+= rotationDestY
+			}
+			*/
+			function animate() {
+				requestAnimationFrame( animate );
+				/*
+				for(var b in objects){
+					objects[b].rotation.y-=0.05;
+					objects[b].rotation.x+=0.06;
+				}
+				/*
+				pivot.rotation.y +=0.0005;
+				*/
+				
+				//customMove();
+				renderer.render( scene, toggledCam );
+			}
+		</script>
+	</body>
+</html>
